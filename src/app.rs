@@ -1,3 +1,4 @@
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
@@ -14,7 +15,7 @@ impl Default for TemplateApp {
         Self {
             // Example stuff:
             label: "Hello World!".to_owned(),
-            value: 2.7,
+            value: 112f32,
         }
     }
 }
@@ -53,7 +54,7 @@ impl eframe::App for TemplateApp {
                 // NOTE: no File->Quit on web pages!
                 let is_web = cfg!(target_arch = "wasm32");
                 if !is_web {
-                    ui.menu_button("File", |ui| {
+                    ui.menu_button("Options", |ui| {
                         if ui.button("Quit").clicked() {
                             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
@@ -67,14 +68,16 @@ impl eframe::App for TemplateApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
+            ui.heading("Mouse size Calculator");
 
             ui.horizontal(|ui| {
                 ui.label("Write something: ");
                 ui.text_edit_singleline(&mut self.label);
             });
 
-            ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
+            let k = get_text(&self.value);
+
+            ui.add(egui::Slider::new(&mut self.value, 110.0..=127.8).text(k));
             if ui.button("Increment").clicked() {
                 self.value += 1.0;
             }
@@ -82,9 +85,12 @@ impl eframe::App for TemplateApp {
             ui.separator();
 
             ui.add(egui::github_link_file!(
-                "https://github.com/emilk/eframe_template/blob/master/",
+                "https://github.com/jovillarrealm/Mouse-size",
                 "Source code."
             ));
+
+           
+
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 powered_by_egui_and_eframe(ui);
@@ -96,7 +102,7 @@ impl eframe::App for TemplateApp {
 
 fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
     ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 0.0;
+        ui.spacing_mut().item_spacing.x = 5.0;
         ui.label("Powered by ");
         ui.hyperlink_to("egui", "https://github.com/emilk/egui");
         ui.label(" and ");
@@ -107,3 +113,52 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
         ui.label(".");
     });
 }
+
+enum MouseSize<T> {
+    OutOfBounds,
+    ExtraSmall(T),
+    Small(T),
+    Medium(T),
+    Large(T),
+    ExtraLarge(T),
+}
+
+fn table(hand_size: &f32) -> MouseSize<f32>{
+
+    let xs = 0.0..160.0;
+    let s =160.0..172.7;
+    let m =172.8..195.7;
+    let l = 195.7 .. 213.5;
+    let xl = 213.6 .. ;
+
+    if xs.contains(hand_size) {
+        MouseSize::ExtraSmall(113.0)
+    } else if s.contains(hand_size) {
+        MouseSize::Small(113.0)
+    } else if m.contains(hand_size) {
+        MouseSize::Medium(122.5)
+    } else if l.contains(hand_size) {
+        MouseSize::Large(127.8)
+    } else if xl.contains(hand_size){
+        MouseSize::ExtraLarge(127.8)
+    } else {
+        MouseSize::OutOfBounds
+    }
+}
+fn get_text(hand_size: &f32) -> String{
+    let mouse_size = table(hand_size);
+
+    match mouse_size {
+        MouseSize::ExtraSmall(v) => format!("Mouse size is XS: smaller than {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::Small(v) => format!("Mouse size is S: choose mouse sizes around {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::Medium(v) => format!("Mouse size is M: choose mouse sizes around {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::Large(v) => format!("Mouse size is L: choose mouse sizes around {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::ExtraLarge(v) => format!("Mouse size is XL: larger than {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::OutOfBounds => String::from("This is some Bullshit Value"),
+    }
+}
+fn to_inch(measurement:f32) -> f32 {
+    measurement / 25.4
+}
+
+

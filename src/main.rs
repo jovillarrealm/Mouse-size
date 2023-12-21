@@ -13,9 +13,9 @@ fn main() -> eframe::Result<()> {
         ..Default::default()
     };
     eframe::run_native(
-        "eframe template",
+        "Mouse Size Calculator",
         native_options,
-        Box::new(|cc| Box::new(eframe_template::TemplateApp::new(cc))),
+        Box::new(|cc| Box::new(mouse_size::TemplateApp::new(cc))),
     )
 }
 
