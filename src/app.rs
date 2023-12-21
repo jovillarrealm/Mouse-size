@@ -75,12 +75,14 @@ impl eframe::App for TemplateApp {
                 ui.text_edit_singleline(&mut self.label);
             });
 
-            let k = get_text(&self.value);
+            
 
-            ui.add(egui::Slider::new(&mut self.value, 110.0..=127.8).text(k));
+            ui.add(egui::Slider::new(&mut self.value, 150.0..=220.0).text("Hand size"));
             if ui.button("Increment").clicked() {
                 self.value += 1.0;
             }
+            let k = get_text(&self.value);
+            ui.heading(k);
 
             ui.separator();
 
@@ -136,6 +138,7 @@ fn table(hand_size: &f32) -> MouseSize<f32>{
     } else if s.contains(hand_size) {
         MouseSize::Small(113.0)
     } else if m.contains(hand_size) {
+        dbg!("reached medium" );
         MouseSize::Medium(122.5)
     } else if l.contains(hand_size) {
         MouseSize::Large(127.8)
@@ -149,11 +152,11 @@ fn get_text(hand_size: &f32) -> String{
     let mouse_size = table(hand_size);
 
     match mouse_size {
-        MouseSize::ExtraSmall(v) => format!("Mouse size is XS: smaller than {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::ExtraSmall(v) => format!("Mouse size is XS:  choose mouse sizes smaller than {} (mm) and {} inches", v, to_inch(v) ),
         MouseSize::Small(v) => format!("Mouse size is S: choose mouse sizes around {} (mm) and {} inches", v, to_inch(v) ),
         MouseSize::Medium(v) => format!("Mouse size is M: choose mouse sizes around {} (mm) and {} inches", v, to_inch(v) ),
         MouseSize::Large(v) => format!("Mouse size is L: choose mouse sizes around {} (mm) and {} inches", v, to_inch(v) ),
-        MouseSize::ExtraLarge(v) => format!("Mouse size is XL: larger than {} (mm) and {} inches", v, to_inch(v) ),
+        MouseSize::ExtraLarge(v) => format!("Mouse size is XL:  choose mouse sizes larger than {} (mm) and {} inches", v, to_inch(v) ),
         MouseSize::OutOfBounds => String::from("This is some Bullshit Value"),
     }
 }
