@@ -1,9 +1,17 @@
 [package]
 name = "mouse_size"
 version = "0.1.0"
-authors = ["Emil Ernerfeldt <emil.ernerfeldt@gmail.com>", "Jorge A.<javillarrm@eafit.edu.co>"]
+authors = ["Jorge AVM <javillarrm@eafit.edu.co>"]
 edition = "2021"
 rust-version = "1.72"
+repository = "https://github.com/jovillarrealm/mouse_size"
+description = "Mouse size calculator, written in rust, using https://www.ohcow.on.ca/resources/apps-tools-calculators/mouse-size-calculator/"
+
+[package.metadata.wix]
+upgrade-guid = "B7D8027F-9B6A-432A-A6C5-FAA8C7FD5A6E"
+path-guid = "523DD1FF-F756-4DEF-81D1-C56BEBE15BA3"
+license = false
+eula = false
 
 
 [dependencies]
@@ -48,9 +56,13 @@ lto = "thin"
 # The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
 cargo-dist-version = "0.6.2"
 # The installers to generate for each app
-installers = []
+installers = ["powershell", "msi"]
 # Target platforms to build apps for (Rust target-triple syntax)
-targets = ["x86_64-unknown-linux-gnu", "aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-pc-windows-msvc"]
+targets = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+# CI backends to support
+ci = ["github"]
+# Publish jobs to run in CI
+pr-run-mode = "upload"
 
 # If you want to use the bleeding edge version of egui and eframe:
 # egui = { git = "https://github.com/emilk/egui", branch = "master" }

@@ -71,14 +71,14 @@ impl eframe::App for TemplateApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading("Mouse size Calculator");
-            
+
             /*
             ui.horizontal(|ui| {
                 ui.label("Write something: ");
                 ui.text_edit_singleline(&mut self.label);
             });
             */
-            
+
             ui.add(egui::Slider::new(&mut self.value, 150.0..=220.0).text("Hand size (mm)"));
             if ui.button("Increment").clicked() {
                 self.value += 1.0;
@@ -87,14 +87,16 @@ impl eframe::App for TemplateApp {
 
             ui.separator();
 
-            ui.add(egui::Slider::new(&mut self.value, to_inch(&150.0)..=to_inch(&220.0)).text("Hand size (mm)"));
+            ui.add(
+                egui::Slider::new(&mut self.value, to_inch(&150.0)..=to_inch(&220.0))
+                    .text("Hand size (mm)"),
+            );
             if ui.button("Increment").clicked() {
                 self.value += 1.0;
             }
             ui.heading(get_text(&to_mm(&self.value)));
 
             ui.separator();
-
 
             ui.add(egui::github_link_file!(
                 "https://github.com/jovillarrealm/Mouse-size",
