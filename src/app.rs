@@ -7,6 +7,8 @@ pub struct TemplateApp {
 
     #[serde(skip)] // This how you opt-out of serialization of a field
     value: f32,
+    #[serde(skip)] // This how you opt-out of serialization of a field
+    value_i: f32,
 }
 
 impl Default for TemplateApp {
@@ -15,6 +17,7 @@ impl Default for TemplateApp {
             // Example stuff:
             label: "Hello World!".to_owned(),
             value: 112f32,
+            value_i: 112f32,
         }
     }
 }
@@ -68,20 +71,30 @@ impl eframe::App for TemplateApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading("Mouse size Calculator");
-
+            
+            /*
             ui.horizontal(|ui| {
                 ui.label("Write something: ");
                 ui.text_edit_singleline(&mut self.label);
             });
-
-            ui.add(egui::Slider::new(&mut self.value, 150.0..=220.0).text("Hand size"));
+            */
+            
+            ui.add(egui::Slider::new(&mut self.value, 150.0..=220.0).text("Hand size (mm)"));
             if ui.button("Increment").clicked() {
                 self.value += 1.0;
             }
-            let k = get_text(&self.value);
-            ui.heading(k);
+            ui.heading(get_text(&self.value));
 
             ui.separator();
+
+            ui.add(egui::Slider::new(&mut self.value, to_inch(&150.0)..=to_inch(&220.0)).text("Hand size (mm)"));
+            if ui.button("Increment").clicked() {
+                self.value += 1.0;
+            }
+            ui.heading(get_text(&to_mm(&self.value)));
+
+            ui.separator();
+
 
             ui.add(egui::github_link_file!(
                 "https://github.com/jovillarrealm/Mouse-size",
@@ -119,7 +132,7 @@ enum MouseSize<T> {
     ExtraLarge(T),
 }
 
-fn table(hand_size: &f32) -> MouseSize<f32> {
+fn table_mm(hand_size: &f32) -> MouseSize<f32> {
     let xs = 0.0..160.0;
     let s = 160.0..172.7;
     let m = 172.8..195.7;
@@ -142,37 +155,41 @@ fn table(hand_size: &f32) -> MouseSize<f32> {
     }
 }
 fn get_text(hand_size: &f32) -> String {
-    let mouse_size = table(hand_size);
+    let mouse_size = table_mm(&hand_size);
 
     match mouse_size {
         MouseSize::ExtraSmall(v) => format!(
             "Mouse size is XS:  choose mouse sizes smaller than {} (mm) and {} inches",
             v,
-            to_inch(v)
+            to_inch(&v)
         ),
         MouseSize::Small(v) => format!(
             "Mouse size is S: choose mouse sizes around {} (mm) and {} inches",
             v,
-            to_inch(v)
+            to_inch(&v)
         ),
         MouseSize::Medium(v) => format!(
             "Mouse size is M: choose mouse sizes around {} (mm) and {} inches",
             v,
-            to_inch(v)
+            to_inch(&v)
         ),
         MouseSize::Large(v) => format!(
             "Mouse size is L: choose mouse sizes around {} (mm) and {} inches",
             v,
-            to_inch(v)
+            to_inch(&v)
         ),
         MouseSize::ExtraLarge(v) => format!(
             "Mouse size is XL:  choose mouse sizes larger than {} (mm) and {} inches",
             v,
-            to_inch(v)
+            to_inch(&v)
         ),
         MouseSize::OutOfBounds => String::from("This is some Bullshit Value"),
     }
 }
-fn to_inch(measurement: f32) -> f32 {
+fn to_inch(measurement: &f32) -> f32 {
     measurement / 25.4
+}
+
+fn to_mm(measurement: &f32) -> f32 {
+    measurement * 25.4
 }
