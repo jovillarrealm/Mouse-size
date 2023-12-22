@@ -157,7 +157,7 @@ fn table_mm(hand_size: &f32) -> MouseSize<f32> {
     }
 }
 fn get_text(hand_size: &f32) -> String {
-    let mouse_size = table_mm(&hand_size);
+    let mouse_size = table_mm(hand_size);
 
     match mouse_size {
         MouseSize::ExtraSmall(v) => format!(
